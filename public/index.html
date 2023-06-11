@@ -1,12 +1,964 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Map Viewer</title>
+    <link rel="icon" href="/assets/media/favicon.png">
+    <link rel="stylesheet" type="text/css" href="/assets/ext/resources/css/ext-all-access.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/ext/resources/fontawesome-5.15.4/css/all.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/ext/resources/css/ol.css">
+    <link href="https://unpkg.com/ol-geocoder/dist/ol-geocoder.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/assets/media/libs/jquery-ui-1.12.1/jquery-ui.css">
+    <style>
+        .x-btn button {
+            width: 100%
+        }
+        
+        .x-tree-node-text {
+            font-size: 12px;
+        }
+        
+        .x-form-item,
+        .x-form-field {
+            font: normal 12px tahoma, arial, verdana, sans-serif;
+        }
+        
+        .x-form-trigger {
+            border-width: 1px 1px 1px 0px;
+            border-color: #ffcc33;
+            background-repeat: no-repeat;
+        }
+        
+        .x-body {
+            color: white;
+            font-size: 12px;
+        }
+        
+        .x-panel-body-default {
+            font-size: 12px;
+        }
+        
+        .x-grid-body {
+            border-top-color: #1f2933;
+        }
+        
+        .x-form-trigger :hover {
+            border-width: 1px 1px 1px 0px;
+            border-color: #ffcc33;
+            background-repeat: no-repeat;
+        }
+        
+        .x-form-field {
+            border: 0.5px solid #ffcc33;
+        }
+        
+        .x-panel-header-text-container-default {
+            color: white;
+            font-size: 12px;
+        }
+        
+        .ol-tooltip {
+            position: relative;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            color: white;
+            padding: 4px 8px;
+            opacity: 0.7;
+            white-space: nowrap;
+            font-size: 12px;
+            cursor: default;
+            user-select: none;
+        }
+        
+        .ol-tooltip-measure {
+            opacity: 1;
+            font-weight: bold;
+        }
+        
+        .ol-tooltip-static {
+            background-color: #ffcc33;
+            color: black;
+            border: 1px solid white;
+        }
+        
+        .ol-tooltip-measure:before,
+        .ol-tooltip-static:before {
+            border-top: 6px solid rgba(0, 0, 0, 0.5);
+            border-right: 6px solid transparent;
+            border-left: 6px solid transparent;
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            margin-left: -7px;
+            left: 50%;
+        }
+        
+        .ol-tooltip-static:before {
+            border-top-color: #ffcc33;
+        }
+        
+        .custom-mouse-position {
+            position: absolute;
+            width: 50%;
+            bottom: 10px;
+        }
+        
+        .watermark {
+            bottom: 5px;
+            right: 10px;
+            position: absolute;
+            z-index: 2;
+        }
+        
+        .x-window-body-default {
+            color: #000
+        }
+        
+        #legend {
+            z-index: 11;
+            padding: 10px;
+            /* padding: 2px 2px; */
+            position: absolute;
+            bottom: 0%;
+            height: 100%;
+            overflow-y: scroll;
+            width: 100%;
+            left: 0%;
+            background-color: #ffffff;
+            font-weight: bold;
+        }
+        
+        .x-toolbar-footer {
+            background: #1f2933;
+            height: 30px;
+        }
+        
+        .x-tab-default .x-tab-inner {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .x-tool-img,
+        .x-tool-collapse-left {
+            width: 20px;
+            left: 0px;
+            position: absolute;
+        }
+        
+        .x-tip {
+            width: auto !important;
+        }
+        
+        .x-tip-body {
+            width: auto !important;
+        }
+        
+        .x-tip-body span {
+            width: auto !important;
+        }
+        
+        .x-toolbar {
+            font-size: 12px;
+            border-style: solid;
+            padding: 0px 4px 0px 4px;
+        }
+        
+        .x-form-item-label {
+            color: white;
+            font: normal 12px/12px tahoma, arial, verdana, sans-serif;
+        }
+        
+        .x-panel-body-default {
+            background: #1f2933
+        }
+        
+        .btnToolbar {
+            border: 0.5px solid #ffcc33;
+            height: 25px;
+            margin-right: 7px;
+        }
+        
+        .x-column-header {
+            font-size: 12px;
+        }
+        
+        .x-grid-header-ct {
+            border: 1px solid #000;
+        }
+        
+        .x-grid-header-ct .x-box-inner {
+            border-bottom: 1px solid #000;
+        }
+        
+        .x-grid-header-ct .x-box-inner .x-column-header-inner {
+            border-right: 1px solid #000;
+        }
+        
+        .x-panel-body-default {
+            font-size: 11px;
+        }
+        
+        .custom-grid .x-grid-cell {
+            font-size: 11px;
+        }
+        
+        .x-window-header {
+            padding: 2px 5px 2px 5px;
+        }
+        
+        .x-window-header-text-container-default {
+            font-family: tahoma, arial, verdana, sans-serif;
+            font-size: 11px;
+        }
+        
+        .x-form-item-label {
+            margin-top: 0px;
+            margin-bottom: 5px;
+        }
+        
+        .ol-geocoder.gcd-gl-container {
+            position: absolute;
+            top: 4.875em;
+            left: 0.7em;
+            box-sizing: border-box;
+            font-size: .9em;
+        }
+    </style>
 </head>
+
 <body>
-    
+    <script type="text/javascript" src="assets/media/libs/jquery-ui-1.12.1/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/assets/ext/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/assets/ext/three.js"></script>
+    <script type="text/javascript" src="/assets/ext/turf.min.js"></script>
+    <script type="text/javascript" src="/assets/ext/ol.js"></script>
+    <script type="text/javascript" src="/assets/ext/proj4.js"></script>
+    <script type="text/javascript" src="/assets/ext/ext-all.js"></script>
+    <script type="text/javascript" src="/assets/ext/var.js"></script>
+    <script type="text/javascript" src="/assets/ext/data.js"></script>
+    <script type="text/javascript" src="/assets/ext/panorama.js"></script>
+    <script type="text/javascript" src="/assets/ext/map.js"></script>
+    <script type="text/javascript" src="/assets/ext/measurement.js"></script>
+    <script src="https://unpkg.com/ol-geocoder"></script>
+    <script type="text/javascript">
+        Ext.require('Ext.*')
+        Ext.tip.QuickTipManager.init()
+        Ext.require([
+            'Ext.window.MessageBox',
+            'Ext.tip.*'
+        ])
+
+        Ext.onReady(function() {
+            let required = '<span style="color:red;font-weight:bold" data-qtip="Required">*</span>';
+            let viewport = Ext.create('Ext.Viewport', {
+                border: false,
+                layout: {
+                    type: 'border',
+                    padding: 0
+                },
+                defaults: {
+                    split: true
+                },
+                items: [{
+                    region: 'west',
+                    id: 'listLayer',
+                    collapsible: true,
+                    title: 'Layers',
+                    split: false,
+                    width: 280,
+                    layout: 'border',
+                    items: [{
+                        region: 'center',
+                        header: false,
+                        items: Ext.create('Ext.tree.Panel', {
+                            id: 'tree',
+                            width: '100%',
+                            height: '100%',
+                            store: storeTree,
+                            rootVisible: false,
+                            border: false,
+                            listeners: {
+                                itemcontextmenu: function(view, r, node, index, e) {
+                                    e.stopEvent()
+                                    Ext.create('Ext.menu.Menu', {
+                                        items: [Ext.create('Ext.Action', {
+                                            text: 'Open attribute table',
+                                            handler: function(e) {
+                                                let nodex = view.node.store.tree.root.childNodes[0].childNodes
+                                                let item = view.getSelectionModel().getSelection()
+                                                if (item[0].data.checked) {
+                                                    Ext.getCmp('listTable').expand()
+
+                                                    setTimeout(function() {
+                                                        Ext.getCmp('grid_attribute').setLoading(true)
+
+                                                        setTimeout(function() {
+                                                            let layer = item[0].raw.layer_name
+                                                            let attribute = ''
+                                                            let operator = ''
+                                                            let value = ''
+
+                                                            generateTable(layer, attribute, operator, value, 'query')
+                                                        }, 1000)
+                                                    }, 500)
+                                                } else {
+                                                    getMsg('error', 'Not found selected feature')
+                                                }
+                                            }
+                                        })]
+                                    }).showAt(e.getXY());
+
+
+                                    return false;
+                                },
+                                'afterrender': function(node, checked, eOpts) {
+                                    if (node.store.tree.root.childNodes.length > 0) {
+                                        let nodex = node.store.tree.root.childNodes[0].childNodes
+
+                                        nodex.forEach(function(item, index) {
+                                            let items = item.raw
+
+                                            addLayers(items.text, items.url, items.layer_name)
+                                        })
+                                    }
+                                },
+                                'checkchange': function(node, checked, eOpts) {
+                                    let item = node.raw
+
+                                    if (item.mode == 1) {
+                                        getLayersWMS(item.text, item.url, item.layer_name, checked)
+                                    }
+
+                                    if (item.text === 'Panorama') {
+                                        getLayerPanos(checked)
+                                        other_panos_group.visible = checked
+                                    }
+
+                                    if (item.text === 'Detection') {
+                                        getLayerDetection(checked)
+                                    }
+
+                                    if (item.text === 'Mapspot') {
+                                        getMapspot(checked)
+                                        spotGroup.visible = checked
+                                    }
+                                }
+                            }
+                        })
+                    }, {
+                        region: 'south',
+                        xtype: 'tabpanel',
+                        title: 'Query & Legend',
+                        flex: 0.8,
+                        layout: 'fit',
+                        split: false,
+                        collapsible: true,
+                        tabPosition: 'bottom',
+                        items: [{
+                                title: 'Feature',
+                                xtype: 'form',
+                                defaultType: 'textfield',
+                                padding: 10,
+                                defaults: {
+                                    anchor: '100%',
+                                },
+                                items: [{
+                                    xtype: 'combobox',
+                                    id: 'cbLayer',
+                                    fieldLabel: 'Layer',
+                                    width: '100%',
+                                    displayField: 'name',
+                                    valueField: 'name',
+                                    store: Ext.create('Ext.data.Store', {
+                                        fields: ['name'],
+                                        data: getDataLayer()
+                                    }),
+                                    editable: false,
+                                    autoSelect: true,
+                                    forceSelection: false,
+                                    afterLabelTextTpl: required,
+                                    emptyText: 'Select layer',
+                                    allowBlank: false,
+                                    listeners: {
+                                        select: function(combo, records, eOpts) {
+                                            let layer_name = records[0].get('name')
+                                            storeAttributeCombo = Ext.create('Ext.data.Store', {
+                                                autoLoad: true,
+                                                autoSync: true,
+                                                data: getDataAttribute(layer_name),
+                                                fields: ['name', 'type']
+                                            })
+
+                                            Ext.getCmp('cbAttribute').clearValue()
+                                            Ext.getCmp('cbAttribute').bindStore(storeAttributeCombo)
+                                        }
+                                    }
+                                }, {
+                                    xtype: 'combobox',
+                                    id: 'cbAttribute',
+                                    fieldLabel: 'Attribute',
+                                    width: '100%',
+                                    valueField: 'name',
+                                    displayField: 'name',
+                                    store: storeAttributeCombo,
+                                    editable: false,
+                                    autoSelect: true,
+                                    forceSelection: false,
+                                    afterLabelTextTpl: required,
+                                    emptyText: 'Select attribute',
+                                    allowBlank: false,
+                                    listeners: {
+                                        select: function(combo, records, eOpts) {
+                                            let layer_type = records[0].get('type')
+                                            storeOperatorCombo = Ext.create('Ext.data.Store', {
+                                                autoLoad: true,
+                                                autoSync: true,
+                                                data: getDataOperator(layer_type),
+                                                fields: ['name', 'type']
+                                            })
+
+                                            Ext.getCmp('cbOperator').clearValue()
+                                            Ext.getCmp('cbOperator').bindStore(storeOperatorCombo)
+                                        }
+                                    }
+                                }, {
+                                    xtype: 'combobox',
+                                    fieldLabel: 'Operator',
+                                    id: 'cbOperator',
+                                    store: storeOperatorCombo,
+                                    valueField: 'type',
+                                    displayField: 'name',
+                                    editable: false,
+                                    autoSelect: true,
+                                    forceSelection: false,
+                                    afterLabelTextTpl: required,
+                                    emptyText: 'Select operator',
+                                    allowBlank: false
+                                }, {
+                                    xtype: 'textfield',
+                                    id: 'txValue',
+                                    fieldLabel: 'Enter Value',
+                                    allowBlank: true
+                                }],
+                                buttons: [{
+                                    cls: 'btnToolbar',
+                                    text: '<span style="font-size:12px;padding-bottom:5px">Load Query</span>',
+                                    handler: function() {
+                                        if (this.up('form').getForm().isValid()) {
+                                            Ext.getCmp('listTable').expand()
+
+                                            setTimeout(function() {
+                                                Ext.getCmp('grid_attribute').setLoading(true)
+
+                                                setTimeout(function() {
+                                                    let layer = Ext.getCmp('cbLayer').getValue()
+                                                    let attribute = Ext.getCmp('cbAttribute').getValue()
+                                                    let operator = Ext.getCmp('cbOperator').getValue()
+                                                    let value = Ext.getCmp('txValue').getValue()
+                                                    let datas = getQueryTable(layer, attribute, operator, value)
+                                                    let fields = getColsTable(layer, 'fields')
+
+                                                    layer_namex = layer
+                                                    storeTable = getDataTable(layer)
+                                                    let columns = getColsTable(layer, 'cols')
+
+                                                    Ext.getCmp('grid_attribute').reconfigure(undefined, fields)
+                                                    storeTable.proxy.data = datas
+                                                    storeTable.load()
+
+                                                    storeTable.on('load', function() {
+                                                        Ext.getCmp('grid_attribute').setLoading(false)
+                                                    })
+
+                                                    Ext.getCmp('paging_toobar').bindStore(storeTable)
+                                                    Ext.getCmp('grid_attribute').bindStore(storeTable)
+                                                    Ext.getCmp('layer_name_table').setText('Layer name: ' + layer)
+                                                }, 1000)
+                                            }, 500)
+                                        }
+                                    }
+                                }]
+                            },
+                            // {
+                            //     title: 'Legend',
+                            //     xtype: 'panel',
+                            //     layout: 'fit',
+                            //     html: '<div id="legend"></div>',
+                            //     listeners: {
+                            //         afterrender: function() {
+                            //             alert('test')
+                            //             legend()
+                            //         }
+                            //     }
+                            // }
+                        ]
+                    }],
+                    listeners: {
+                        collapse: function() {
+                            // Ext.getCmp('layerButton').toggle(false);
+                        },
+                        expand: function() {
+                            // Ext.getCmp('layerButton').toggle(true);
+                        }
+                    }
+                }, {
+                    region: 'center',
+                    id: 'mapviews',
+                    title: 'Map',
+                    flex: 1,
+                    html: '<div id="map" style="height: 100%; width: 100.1%"><img src="assets/media/logo.png" class="watermark" width="130px" height="40px"></div>',
+                    items: [{
+                        xtype: 'toolbar',
+                        border: true,
+                        items: [{
+                            xtype: 'splitbutton',
+                            width: 40,
+                            // height: 25,
+                            cls: 'btnToolbar',
+                            text: '<span style="font-size:13px"><i class="fas fa-ruler-combined"></i></span>',
+                            tooltip: 'Measurement',
+                            tooltipType: 'title',
+                            id: 'measurement',
+                            pressed: false,
+                            enableToggle: true,
+                            floating: false,
+                            handler: function() {
+                                Ext.getCmp('measurement').toggle(false);
+                            },
+                            menu: [{
+                                text: 'Clear Measurement',
+                                checked: true,
+                                name: 'clear_measurement',
+                                handler: function(btn) {
+                                    if (map) {
+                                        map.removeInteraction(draw)
+                                        clearMeasurement()
+                                    }
+
+                                    Ext.getCmp('measurement').toggle(false)
+                                    btn.up().down('[name=area]').setChecked(false, false)
+                                    btn.up().down('[name=line]').setChecked(false, false)
+                                    btn.up().down('[name=clear_measurement]').setChecked(true, true)
+                                }
+                            }, '-', {
+                                text: 'Length (LineString)',
+                                checked: false,
+                                name: 'line',
+                                handler: function(btn) {
+                                    type = 'line'
+                                    map.removeInteraction(draw)
+                                    addInteraction(type)
+
+                                    map.on('pointermove', pointerMoveHandler)
+                                    createHelpTooltip()
+                                    map.getViewport().addEventListener('mouseout', function() {
+                                        helpTooltipElement.classList.add('hidden')
+                                    })
+
+                                    Ext.getCmp('measurement').toggle(true)
+                                    btn.up().down('[name=line]').setChecked(true, true)
+                                    btn.up().down('[name=area]').setChecked(!btn.checked, true)
+                                    btn.up().down('[name=clear_measurement]').setChecked(false, false)
+                                }
+                            }, {
+                                text: 'Area (Polygon)',
+                                checked: false,
+                                name: 'area',
+                                handler: function(btn) {
+                                    type = 'area'
+                                    map.removeInteraction(draw)
+                                    addInteraction(type)
+                                    Ext.getCmp('measurement').toggle(true)
+                                    btn.up().down('[name=area]').setChecked(true, true)
+                                    btn.up().down('[name=line]').setChecked(!btn.checked, true)
+                                    btn.up().down('[name=clear_measurement]').setChecked(false, false)
+                                }
+                            }]
+                        }, {
+                            xtype: 'combobox',
+                            padding: '4 4 4 0',
+                            displayField: 'name',
+                            valueField: 'url',
+                            store: Ext.create('Ext.data.Store', {
+                                fields: ['name', 'url'],
+                                data: [{
+                                    "name": "OpenStreetMap",
+                                    "url": "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                }, {
+                                    "name": "Google Satellite",
+                                    "url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+                                }]
+                            }),
+                            defaultValue: "OpenStreetMap",
+                            editable: false,
+                            forceSelection: false,
+                            listeners: {
+                                beforequery: function(record) {
+                                    record.query = new RegExp(record.query, 'i')
+                                    record.forceAll = true
+                                },
+                                afterrender: function() {
+                                    this.setValue(this.defaultValue)
+                                },
+                                select: function(record) {
+                                    if (basemap) {
+                                        map.removeLayer(basemap)
+                                    }
+
+                                    if (record.rawValue === "OpenStreetMap") {
+                                        basemap = new ol.layer.Tile({
+                                            source: new ol.source.OSM()
+                                        })
+                                    } else {
+                                        basemap = basemapUrl(record.value)
+                                    }
+
+                                    map.addLayer(basemap)
+                                    basemap.setZIndex(-1)
+                                    markerVector.setZIndex(1)
+                                    otherPanosLayer.setZIndex(1)
+                                }
+                            }
+                        }]
+                    }],
+                    listeners: {
+                        collapse: function() {
+                            layerVisible(false)
+                        },
+                        expand: function() {
+                            layerVisible(true)
+                            map.updateSize()
+                        },
+                        move: function() {
+                            layerVisible(true)
+                        },
+                        afterrender: function() {
+                            initMap()
+                        },
+                        resize: function() {
+                            map.updateSize();
+                        }
+                    }
+                }, {
+                    region: 'east',
+                    id: 'panos',
+                    collapsible: true,
+                    title: 'Panorama',
+                    split: true,
+                    flex: 1,
+                    html: '<div id="viewer"></div>',
+                    listeners: {
+                        afterrender: function() {
+                            initPano()
+                        },
+                        resize: function() {
+                            widthPanel = this.lastBox.width
+                            heightPanel = this.lastBox.height
+
+                            renderResize()
+                        }
+                    },
+                    items: [{
+                        xtype: 'toolbar',
+                        height: 34,
+                        border: true,
+                        width: "100%",
+                        items: [{
+                            xtype: 'button',
+                            cls: 'btnToolbar',
+                            height: 25,
+                            width: 28,
+                            text: '<i class="fas fa-info-circle" style="font-size:13px"></i>',
+                            handler: function() {
+                                info()
+                            }
+                        }, {
+                            xtype: 'button',
+                            id: 'map-pin',
+                            cls: 'btnToolbar',
+                            height: 25,
+                            width: 28,
+                            pressed: false,
+                            enableToggle: false,
+                            text: '<i class="fas fa-map-pin" style="font-size:13px"></i>',
+                            listeners: {
+                                click: function(button, evt) {
+                                    if (state_mapspot == false) {
+                                        state_mapspot = true
+                                        button.setText('<i class="fas fa-ban" style="font-size:13px"></i>')
+                                    } else {
+                                        state_mapspot = false
+                                        button.setText('<i class="fas fa-map-pin" style="font-size:13px"></i>')
+                                    }
+                                }
+                            }
+                        }, {
+                            xtype: 'button',
+                            id: 'btn-remove',
+                            cls: 'btnToolbar',
+                            height: 25,
+                            width: 28,
+                            pressed: false,
+                            enableToggle: false,
+                            text: '<i class="fas fa-trash" style="font-size:13px"></i>',
+                            listeners: {
+                                click: function(button, evt) {
+                                    if (state_remove == false) {
+                                        state_remove = true
+                                        button.setText('<i class="fas fa-ban" style="font-size:13px"></i>')
+                                    } else {
+                                        Ext.Msg.confirm("Confirmation", "Do you want to delete panorama?", function(btnText) {
+                                            if (btnText === "yes") {
+                                                selected.forEach(function(layer) {
+                                                    deletePanorama(layer.getSource().getFeatures()[0].O.id)
+                                                })
+                                            } else {
+                                                selected.forEach(function(layer) {
+                                                    map.removeLayer(layer)
+                                                })
+                                            }
+                                        }, this)
+
+                                        state_remove = false
+                                        button.setText('<i class="fas fa-trash" style="font-size:13px"></i>')
+                                    }
+                                }
+                            }
+                        }, {
+                            xtype: 'button',
+                            id: 'measure',
+                            cls: 'btnToolbar',
+                            height: 25,
+                            width: 28,
+                            pressed: false,
+                            enableToggle: false,
+                            text: '<i class="fas fa-solid fa-ruler" style="font-size:13px"></i>',
+                            listeners: {
+                                click: function(button, evt) {
+                                    if (state_measure == false) {
+                                        state_measure = true
+                                        button.setText('<i class="fas fa-ban" style="font-size:13px"></i>')
+                                    } else {
+                                        state_measure = false
+                                        button.setText('<i class="fas fa-solid fa-ruler" style="font-size:13px"></i>')
+                                    }
+                                }
+                            }
+                        }, '->', {
+                            xtype: 'label',
+                            text: 'Period: ',
+                            padding: '4 4 4 0'
+                        }, {
+                            xtype: 'combobox',
+                            padding: '4 4 4 0',
+                            displayField: 'name',
+                            valueField: 'value',
+                            store: Ext.create('Ext.data.Store', {
+                                fields: ['name', 'value'],
+                                data: [{
+                                    "name": "-- Select period --",
+                                    "value": "Select period"
+                                }, {
+                                    "name": "Jan 2021",
+                                    "value": "2021-01"
+                                }, {
+                                    "name": "Feb 2021",
+                                    "value": "2021-02"
+                                }, {
+                                    "name": "Mar 2021",
+                                    "value": "2021-03"
+                                }, {
+                                    "name": "Apr 2021",
+                                    "value": "2021-04"
+                                }, {
+                                    "name": "May 2021",
+                                    "value": "2021-05"
+                                }, {
+                                    "name": "Jun 2021",
+                                    "value": "2021-06"
+                                }, {
+                                    "name": "Jul 2021",
+                                    "value": "2021-07"
+                                }, {
+                                    "name": "Aug 2021",
+                                    "value": "2021-08"
+                                }, {
+                                    "name": "Sep 2021",
+                                    "value": "2021-09"
+                                }, {
+                                    "name": "Oct 2021",
+                                    "value": "2021-10"
+                                }, {
+                                    "name": "Nov 2021",
+                                    "value": "2021-11"
+                                }, {
+                                    "name": "Des 2021",
+                                    "value": "2021-12"
+                                }]
+                            }),
+                            defaultValue: "Select Period",
+                            width: 120,
+                            editable: false,
+                            forceSelection: false,
+                            listeners: {
+                                afterrender: function() {
+                                    this.setValue(this.defaultValue)
+                                },
+                                select: function(record) {
+                                    let params = ''
+                                    params = otherPanosLayer.getSource().getParams()
+                                    params.cql_filter = "project_id = '" + getProject() + "' AND year = " + getYear() + " AND shooting_time LIKE '%" + record.value + "%'"
+                                    otherPanosLayer.getSource().updateParams(params)
+                                        // console.log(otherPanosLayer.getSource().getStyle())
+
+                                    // console.log(otherPanosLayer.getSource())
+
+                                    let params_detection = ''
+                                    params_detection = otherPanosLayerDetection.getSource().getParams()
+                                    params_detection.cql_filter = "project_id = '" + getProject() + "' AND year = " + getYear() + " AND shooting_time LIKE '%" + record.value + "%'"
+                                    otherPanosLayerDetection.getSource().updateParams(params_detection)
+
+                                    otherPanosLayer.setVisible(true)
+                                    otherPanosLayerDetection.setVisible(true)
+                                }
+                            }
+                        }]
+                    }]
+                }, {
+                    region: 'south',
+                    id: 'listTable',
+                    collapsible: true,
+                    collapsed: true,
+                    title: 'Feature Attributes',
+                    split: false,
+                    border: false,
+                    height: 300,
+                    autoScroll: false,
+                    layout: 'fit',
+                    items: Ext.create('Ext.grid.Panel', {
+                        id: 'grid_attribute',
+                        fit: true,
+                        cls: 'custom-grid',
+                        border: false,
+                        columnLines: false,
+                        stripeRows: true,
+                        columns: new Array(),
+                        store: storeTable,
+                        verticalScroller: {
+                            trailingBufferZone: 10,
+                            leadingBufferZone: 10
+                        },
+                        selModel: {
+                            selType: 'rowmodel'
+                        },
+                        plugins: [cellEditing],
+                        dockedItems: [{
+                            xtype: 'toolbar',
+                            dock: 'top',
+                            items: [{
+                                xtype: 'label',
+                                id: 'layer_name_table'
+                            }]
+                        }, {
+                            xtype: 'toolbar',
+                            dock: 'bottom',
+                            padding: 0,
+                            margin: 0,
+                            items: [{
+                                xtype: 'pagingtoolbar',
+                                id: 'paging_toobar',
+                                border: false,
+                                width: '100%',
+                                store: storeTable,
+                                displayInfo: true
+                            }]
+                        }]
+                    }),
+                    tbar: [{
+                        xtype: 'button',
+                        cls: 'btnToolbar',
+                        margin: 4,
+                        text: '<span style="font-size:12px"><i class="fas fa-edit"></i> Edit Feature</span>',
+                        handler: function() {
+                            let grid = Ext.getCmp('grid_attribute')
+                            let selection = grid.getSelectionModel().getSelection()[0].index
+
+                            rowIdx = selection
+                        }
+                    }, {
+                        xtype: 'button',
+                        cls: 'btnToolbar',
+                        margin: 4,
+                        text: '<span style="font-size:12px"><i class="fas fa-save"></i> Save Edit</span>',
+                        handler: function() {
+                            rowIdx = ''
+                        }
+                    }, '->', {
+                        xtype: 'button',
+                        cls: 'btnToolbar',
+                        margin: 4,
+                        text: '<span style="font-size:12px"><i class="fas fa-sync-alt"></i> Reload Data</span>',
+                        handler: function() {
+                            rowIdx = ''
+                        }
+                    }]
+                }]
+            })
+        })
+
+        let storeTree = Ext.create('Ext.data.TreeStore', getStoreTree())
+
+        let info = function() {
+            let w = window.innerWidth
+            let h = window.innerHeight
+
+            let cmp = Ext.getCmp('frmInfo')
+
+            if (!cmp) {
+                cmp = Ext.create('Ext.Window', {
+                    id: 'frmInfo',
+                    title: 'Information',
+                    width: 360,
+                    height: 160,
+                    plain: false,
+                    resizable: false,
+                    bodyStyle: "background-color: rgba(223,232,246,0.5);",
+                    style: "background-color: rgba(223,232,246,0.5);",
+                    headerPosition: 'right',
+                    layout: 'fit',
+                    html: '<table style="margin: 10px;width:100%;font-size:7.5pt;border-collapse: collapse;">' +
+                        '<tr><td width="70px">Pano ID</td><td width="10px">:</td><td><span id="pano_key_info"></span></td></tr>' +
+                        '<tr><td width="70px">Base Name</td><td width="10px">:</td><td><span id="filename_info"></span></td></tr>' +
+                        '<tr><td>Longitude</td><td>:</td><td><span id="lon_info"></span></td></tr>' +
+                        '<tr><td>Latitude</td><td>:</td><td><span id="lat_info"></span></td></tr>' +
+                        '<tr><td>UTM X</td><td>:</td><td><span id="x_info"></span></td></tr>' +
+                        '<tr><td>UTM Y</td><td>:</td><td><span id="y_info"></span></td></tr>' +
+                        '<tr><td>Cursor Head</td><td>:</td><td><span id="cursor_head_info"></span></td></tr>' +
+                        '<tr><td>Cursor Dist</td><td>:</td><td><span id="cursor_dist_info"></span></td></tr>' +
+                        '</table>',
+                    listeners: {
+                        afterrender: function() {
+                            $('#pano_key_info').html(pano_key)
+                            $('#filename_info').html(filename)
+                            $('#lon_info').html(pano_lon ? pano_lon.toFixed(7) : 0)
+                            $('#lat_info').html(pano_lat ? pano_lat.toFixed(7) : 0)
+                            $('#x_info').html(utm_x ? utm_x.toFixed(7) : 0)
+                            $('#y_info').html(utm_y ? utm_y.toFixed(7) : 0)
+                        },
+                        show: function() {
+                            this.setX(w - this.getWidth() - 5)
+                            this.setY(85)
+                        }
+                    }
+                })
+            }
+
+            cmp.show()
+        }
+    </script>
 </body>
+
 </html>
