@@ -5,7 +5,7 @@ let initPano = function() {
 
     let horizon_geometry = new THREE.EdgesGeometry(new THREE.CircleGeometry(450, 50))
     let horizon_material = new THREE.LineDashedMaterial({
-        color: 'orange ',
+        color: 'orange',
         linewidth: 1,
         scale: 1,
         dashSize: 5,
@@ -940,6 +940,7 @@ let removeMapSpot = function(image_key) {
                     buttons: Ext.Msg.OK,
                     modal: true,
                     callback: function(btn) {
+			console.log("aaa");
                         restoreSpots()
                         updateContext()
                         cmpMapspot.close()

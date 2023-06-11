@@ -58,7 +58,8 @@ let initMap = function() {
             'TILED': true,
             "exceptions": 'application/vnd.ogc.se_inimage',
         },
-        serverType: 'geoserver'
+        serverType: 'geoserver',
+        willReadFrequently: true
     })
 
     otherPanosLayer = new ol.layer.Image({
@@ -75,7 +76,8 @@ let initMap = function() {
             'TILED': true,
             "exceptions": 'application/vnd.ogc.se_inimage',
         },
-        serverType: 'geoserver'
+        serverType: 'geoserver',
+        willReadFrequently: true
     })
 
     otherPanosLayerDetection = new ol.layer.Image({
