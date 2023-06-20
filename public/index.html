@@ -615,12 +615,10 @@
                                         basemap = new ol.layer.Tile({
                                             source: new ol.source.OSM()
                                         })
-                                    } if(record.rawValue === "Google Road Map") {
-                                        basemap = basemapUrl(record.value)
                                     } else {
                                         basemap = basemapUrl(record.value)
                                     }
-console.log(basemap)
+                                    console.log(basemap)
                                     map.addLayer(basemap)
                                     basemap.setZIndex(-1)
                                     markerVector.setZIndex(1)
