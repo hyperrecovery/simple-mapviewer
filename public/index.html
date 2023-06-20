@@ -588,6 +588,9 @@
                                     "name": "OpenStreetMap",
                                     "url": "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 }, {
+                                    "name": "Google Road Map",
+                                    "url": "https://mt1.google.com/vt/lyrs=h&x={x}&y={y}&z={z}"
+                                }, {
                                     "name": "Google Satellite",
                                     "url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
                                 }]
@@ -612,10 +615,12 @@
                                         basemap = new ol.layer.Tile({
                                             source: new ol.source.OSM()
                                         })
+                                    } if(record.rawValue === "Google Road Map") {
+                                        basemap = basemapUrl(record.value)
                                     } else {
                                         basemap = basemapUrl(record.value)
                                     }
-
+console.log(basemap)
                                     map.addLayer(basemap)
                                     basemap.setZIndex(-1)
                                     markerVector.setZIndex(1)
