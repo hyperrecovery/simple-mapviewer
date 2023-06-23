@@ -812,9 +812,9 @@
                                     params = otherPanosLayer.getSource().getParams()
                                     params.cql_filter = "project_id = '" + getProject() + "' AND year = " + getYear() + " AND shooting_time LIKE '%" + record.value + "%'"
                                     otherPanosLayer.getSource().updateParams(params)
-                                        // console.log(otherPanosLayer.getSource().getStyle())
+                                        console.log(otherPanosLayer.getSource().getStyle())
 
-                                    // console.log(otherPanosLayer.getSource())
+                                    //console.log(otherPanosLayer.getSource())
 
                                     let params_detection = ''
                                     params_detection = otherPanosLayerDetection.getSource().getParams()
